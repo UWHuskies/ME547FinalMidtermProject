@@ -27,12 +27,12 @@ tfreita@uw.edu}
 \maketitle
 
 \begin{abstract}
-The following analysis models a 2D vectored thrust aircraft and simulates its positional response with different thruster inputs. This nonlinear model is derived from Newtons' laws of motion and linearized around its equilibrium points using Jacobian Linearization and small angle approximation. This simulation determined the aircraft positional responses through testing a step, impulse, and a sine wave at different frequencies. The simulation showed the aircraft horizontal position is unstable for all inputs. The large change in the aircraft orientation violated the small angle approximation, and the model neglected air torque resistance. The vertical position was stable for an impulse input but not asymptotic stable for a step and sinusoidal inputs. The next steps for this analysis will be implementing a Linear-Quadratic Regulator (LQR) controller to maintain stability.
+The following analysis models a 2D vectored thrust aircraft and simulates its positional response with different thruster inputs. This nonlinear model is derived from Newtons' laws of motion and linearized around its equilibrium points using Jacobian Linearization and small angle approximation. This simulation determined the aircraft positional responses through testing a step, an impulse, and a sine wave at different frequencies. The simulation showed the aircraft horizontal position is unstable for all inputs. The large change in the aircraft orientation violated the small angle approximation, and the model neglected air torque resistance. The vertical position was stable for an impulse input but not asymptotically stable for a step and sinusoidal inputs. The next steps for this analysis will be implementing a Linear-Quadratic Regulator (LQR) controller to maintain stability.
 \end{abstract}
 
 
 \section{Introduction}
-The study of motion controls can be explored in many mechanical system applications. Motion controls have been implemented on aircraft for many years to control structural components including ailerons, elevators, and rudders. In recent decades, the Harrier jump jet has introduced the possibility for vertical takeoff and landing [1]. Specifically, this aircraft can hover and vertically takeoff \& land by changing the direction of the thrusters from a horizontal to downward position [1]. To navigate these vertical maneuvers, a controller is implemented for positional stability [3],[1]. This paper will focus on creating a model and simulating the response of a hovering vectored thrust aircraft.  
+The study of motion controls can be explored in many mechanical system applications. Motion controls have been implemented on aircraft for many years to control structural components including ailerons, elevators, and rudders. In recent decades, the Harrier jump jet has introduced the possibility for vertical takeoff and landing [1]. Specifically, the direction of the thrusters  change from a horizontal to downward position [1]. To navigate these vertical maneuvers, a controller is implemented for positional stability [3],[1]. This paper will focus on creating a model and simulating the response of a hovering vectored thrust aircraft.  
 
 \section{Problem Formation:}
 \subsection{Model/Plant}
@@ -47,7 +47,7 @@ Note: This diagram is not to scale.
 \end{figure}
 
 \subsection{Phyiscs:}
-The aircraft can be represented as an airfoil which experiences aerodynamic forces (lift \& drag) from the air pressure distribution and shear stresses. The lift force counteracts the weight of the aircraft, and thrust reduces the drag. Based on Newton’s $3^{rd}$ law, the applied downward thruster forces will have equal and opposite reactions, which are the aircraft lift forces. Also, the differential pressures across the aircraft area will create lift. The weight of the system is the aircraft mass. Drag is created by air and the vertical thruster reactions in the drag direction. The air stream leaving the thrusters is a laminar flow because the vertical maneuvers are at low speeds. The translational air drag, which opposites the direction of motion, is equal to the velocity times the damping coefficient ($c$) 
+The aircraft can be represented as an airfoil which experiences aerodynamic forces (lift \& drag) from the air pressure distribution and shear stresses. The lift force counteracts the weight of the aircraft, and the thrust reduces the drag. Based on Newton’s $3^{rd}$ law, the applied downward thruster forces will have equal and opposite reactions, which are the aircraft lift forces. Also, the differential pressures across the aircraft area will create lift. The weight of the system is the aircraft mass. Drag is created by air and the vertical thruster reactions in the drag direction. The air stream leaving the thrusters is a laminar flow because the vertical maneuvers are at low speeds. The translational air drag, which opposes the direction of motion, is equal to the velocity times the damping coefficient ($c$) 
  ($F_{drag} = cx^\prime$). Note that the $1^{st}$ derivative of the aircraft position is velocity. $c$ depends on the frictional forces from the shear stresses along the aircraft surface, and the air pressure distribution in the drag direction.\\
 
 Newton's $2^{nd}$ law of motion is valid for this dynamic model because the aircraft position and orientation change in time. This law states the summation of forces equal the mass times acceleration. Similarly, the summation of torques equal the moment of inertia times angular acceleration. Note that the $2^{nd}$ derivative of position is the aircraft acceleration. Based on the FBD in Fig. 1, the system forces are air drag, reaction forces by the thrusters, and weight. These forces are broken down into their respected x and y components (Equations 1 \& 2). Note that these model equations are applicable to a hovering aircraft with no external disturbances. For Equation 3, the only torque on the aircraft is from the thruster reaction ($F_1$). Note that there is no air torque resistance in Equation 3.
@@ -72,7 +72,7 @@ Note: $u_1$ and $u_2$ represent $F_1$ and $F_2$ respectively in this block diagr
 \end{figure}
 
 \subsection{Nonlinear Differential Equation Observations:}
-This model has three coupled $2^{nd}$ order, ordinary differential equations. Note that these nonlinear equations have trigonometric functions. This system of equations is a continuous time model and a time varying system because the response and the differential equation coefficients depend on time. The model is casual because the equations depend on the current states. As previously mentioned, this is a dynamic system as the aircraft position and orientation change respect to time. Table I lists the mathematical variables used in this analysis.\\
+This model has three coupled $2^{nd}$ order, ordinary differential equations. Note that these nonlinear equations have trigonometric functions. This system of equations is a continuous time model and a time varying system because the response and the differential equation coefficients depend on time. The model is causal because the equations depend on the current states. As previously mentioned, this is a dynamic system as the aircraft position and orientation change with respect to time. Table I lists the mathematical variables used in this analysis.\\
 
 \begin{table}[htbp]
 \begin{center}
@@ -147,7 +147,7 @@ $G_2$ & Local y transfer function & $-$\\
 
 \newpage
 \section{Analysis}
-This model is a system of nonlinear differential equations. Therefore, the system will be linearized around its equilibrium points with the Jacobian Linearization method [2]. These $2^{nd}$ differential equations are converted to a nonlinear state-space system, which is a system of $1^{st}$  order differential equations. $z$ is the nonlinear state-space variable for the state equations: ($z$ = ($z_1 = x$, $z_2 = y$, $z_3 = \theta$, $z_4 = x^\prime$, $z_5 = y^\prime$, $z_6 = \theta^\prime$)), and $F$ is the nonlinear input variable: ($F$ = ($F_1,F_2$)).\\
+This model is a system of nonlinear differential equations. Therefore, the system will be linearized around its equilibrium points with the Jacobian Linearization method [2]. These $2^{nd}$ differential equations are converted to a nonlinear state-space system, which is a system of $1^{st}$  order differential equations. $z$ is the nonlinear state-space variable for the state equation: ($z$ = ($z_1 = x$, $z_2 = y$, $z_3 = \theta$, $z_4 = x^\prime$, $z_5 = y^\prime$, $z_6 = \theta^\prime$)), and $F$ is the nonlinear input variable: ($F$ = ($F_1,F_2$)).\\
 
 Note: assume small angle approximation around the equilibrium points: $sin(\theta) \approx \theta$ \& $cos(\theta) \approx 1$. The range of $\theta$ is from 0 to $2\pi$. Equations 4 and 5 show the nonlinear state-space and output equations respectively [1]. $f$ is the time derivative of $z$, and $h$ is the nonlinear state-space output.
 
@@ -368,7 +368,7 @@ r&	0.25 $m$\\
 \subsection{Linearized Transfer Functions, Poles, \& Zeros:}
 For this simulation, a MATLAB script converts these linearized Jacobian Matrices to a state-space system and transfer functions. The poles and zeroes are computed to determine the stability and system performance. For each transfer function, a Bode plot and the responses of the different inputs are plotted. \\
 
-Matlab converts these state-space equations to a transfer function for each output (Equation 26). Note that there are no initial conditions.
+MATLAB converts these state-space equations to a transfer function for each output (Equation 26). Note that there are no initial conditions.
 \[
  \frac{Y(s)}{U(s)} = C(sI-A)^{-1}B+D \tag{26}
 \]
@@ -380,127 +380,127 @@ Horizontal Positional ($x - x_e$) Transfer Function:\\
 G_1(s) = \frac{0.25 s^4 + 0.003125 s^3 - 51.63 s^2 - 0.6454 s}{s^6 + 0.025 s^5 + 0.0001563 s^4} \tag{27}
 \]
 \\
-\noindent X Poles: 0, 0, 0, -0.0125, and -0.0125\\
-X Zeros: 0, 14.3710, -14.3710, and -0.0125\\
+\noindent $x$ Poles: 0, 0, 0, -0.0125, and -0.0125\\
+$x$ Zeros: 0, 14.3710, -14.3710, and -0.0125\\
 
 Vertical Positional ($y - y_e$) Transfer Function:
 \[
 G_2(s) = \frac{0.25 s^4 + 0.003125 s^3}{s^6 + 0.025 s^5 + 0.0001563 s^4} \tag{28}
 \]
 \\
-Y Poles: 0, 0, 0, 0, -0.0125, and -0.0125\\
-Y Zeros: 0, 0, 0 , -0.0125\\
+$y$ Poles: 0, 0, 0, 0, -0.0125, and -0.0125\\
+$y$ Zeros: 0, 0, 0 , -0.0125\\
 
-For both transfer functions, multiple poles at the origin makes this system not asymptotic stable without accounting for pole-zero cancellation. For a step \& impulse input, the local x transfer function has one pole-zero cancellation at the origin, but the multiplicity of the eigenvalues at the origin will cause this system to be unstable. The local y transfer function has 3 pole-zero cancellations at the origin, therefore the system responses will behavior like a $2^{nd}$ order system. For this local y response, the impulse input will be a stable step response, and the step response will behavior like an unstable ramp response. 
+For both transfer functions, multiple poles at the origin makes this system not asymptotically stable without accounting for pole-zero cancellation. For a step \& impulse input, the local x transfer function has one pole-zero cancellation at the origin, but the multiplicity of the eigenvalues at the origin will cause this system to be unstable. The local y transfer function has 3 pole-zero cancellations at the origin, therefore the system responses will behave like a $2^{nd}$ order system. For this local y response, the impulse input will be a stable step response, and the step input will behave like an unstable ramp response. 
 
 \newpage
 \section{Results}
-The following results are the Bode plots and the local behavior of the vertical ($y - y_e$) and horizontal ($x - x_e$) positional responses for these inputs (impulse, step, and a sine wave at different frequencies). 
+The following results are the Bode plots and the local behavior of the vertical ($y - y_e$) and horizontal ($x - x_e$) positional responses for these inputs (an impulse, a step, and a sine wave at different frequencies). 
 
 Note: A sinusoidal output will have the same frequency as the input but shifted in magnitude and phase. For a Bode plot, if the magnitude is greater than 0, the output will be amplified, and when the magnitude is less than 0, the signal will attenuate. The output amplitude is the same as the input amplitude if the magnitude is zero. A negative phase means the output leads the input, and the output lags the input for a positive phase. The output and input are in-phase when the phase is zero.
 
-\subsection{Local X Responses:}
-\subsubsection{Local X Impulse Response} 
+\subsection{Local x Responses:}
+\subsubsection{Local x Impulse Response} 
 \begin{figure}[htbp]
 \centering
 \centerline{\includegraphics[scale=0.6]{XImpulseRes.png}}
-\caption{Impulse X Positional Response}
+\caption{Impulse x Positional Response}
 \label{figure}
 \end{figure}
 
 
-Fig. 4 shows the system initially starting at the origin and then going to negative infinity. Based on Equation 21, the magnitudes of air drag and weight were larger than the impulse input, therefore the trajectory tended to negative x direction. In the torque equation (Equation 23), the angular acceleration is directly proportional to the input. This equation does not have any torque resistance, so this system will continually rotate as $\theta$ increases. The small angle approximation assumption is no longer valid for large angle changes. This system is unstable but implementing a controller can bound $\theta$.
+Fig. 4 shows the system initially starting at the origin and then going to negative infinity. Based on Equation 21, the magnitudes of air drag and weight were larger than the impulse input, therefore the trajectory traveled to the negative x direction. In the torque equation (Equation 23), the angular acceleration is directly proportional to the input. This equation does not have any torque resistance, so this system will continually rotate as $\theta$ increases. The small angle approximation assumption is no longer valid for large angle changes. This system is unstable but implementing a controller to bound $\theta$.
 
 \newpage
-\subsubsection{Local X Step Response} 
+\subsubsection{Local x Step Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{XStepRes.png}}
-\caption{Step X Positional Response}
+\caption{Step x Positional Response}
 \label{figure}
 \end{figure}
 
-Fig. 5 has a similar trend as the impulse response. The step input has a longer constant response than the impulse response initially, but air drag and gravity change the trajectory direction as $\theta$ increases. Note that the step input is constant, therefore a constant acceleration will create a parabolic response for local x. The moment of inertia, $J$, is indirectly proportional to the angular acceleration (Equation 23), so a small $J$ will rapidly increase the angular acceleration. Note that this simulation captures the system response for the model and a real aircraft.  
+Fig. 5 has a similar trend as the impulse response. Initially, the step input had a longer constant response than the impulse response, but air drag and gravity changed the trajectory direction as $\theta$ increased. Note that the step input is constant, therefore a constant acceleration will create a parabolic response for local x. The moment of inertia, $J$, is indirectly proportional to the angular acceleration (Equation 23), so a small $J$ will rapidly increase the angular acceleration. Note that this simulation captures the system response for the model and a real aircraft.  
 
-\subsubsection{Local X Bode Response} 
+\subsubsection{Local x Bode Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{XBode.png}}
-\caption{X Bode Plot}
+\caption{Local x Bode Plot}
 \label{figure}
 \end{figure}
 
-In Fig. 6, the magnitude is a constant slope, and the phase is an exponential decay for low frequencies. The output magnitude will be amplified, and lead the input signal. For high frequencies, the output signal will lead the input signal at a constant -180$^{\circ}$ phase, and its magnitude will attenuate with a smaller slope than the low frequencies. Note that the frequency range is from 1 to 1000 $rad/s$. This plot may not accurately represent the behavior at low frequency (0.01 $rad/s$).
+In Fig. 6, the magnitude is a constant slope, and the phase is an exponential decay for low frequencies. The output magnitude will be amplified, and lead the input signal. For high frequencies, the output signal will lead the input signal at a -180$^{\circ}$ phase, and its magnitude will attenuate with a smaller slope than the low frequencies. Note that the frequency range is from 1 to 1000 $rad/s$. This plot may not accurately represent the behavior at low frequency (0.01 $rad/s$).
 
 
 \newpage
-\subsubsection{Local X High Freq Response}
+\subsubsection{Local x High Freq Response}
 \begin{figure}[htbp]
 \centering
 \centerline{\includegraphics[scale=0.60]{XHighFreqRes.png}}
-\caption{High Frequency Sinusoidal X  Positional Response}
+\caption{High Frequency Sinusoidal x Positional Response}
 \label{figure}
 \end{figure}
 
-For high frequency (Fig. 7), the local behavior of x is similar to the step response. This response agrees with the Bode plot because the signal attenuates at a smaller slope than the low frequency response. As previously mentioned, this linearized system will tend to negative infinity as it is unstable. \\
+For high frequency (Fig. 7), the local behavior of x is similar to the step response. This response agrees with the Bode plot because the signal attenuates at a smaller slope than the low frequency response. As previously mentioned, this linearized system will go in the direction of negative infinity as it is unstable. \\
 
-\subsubsection{Local X Low Freq Response} 
+\subsubsection{Local x Low Freq Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.4]{XLowFreqRes.png}}
-\caption{Low Frequency Sinusoidal X Positional Response}
+\caption{Low Frequency Sinusoidal x Positional Response}
 \label{figure}
 \end{figure}
 
-Fig. 8 displays an identical trajectory as the impulse response. This response agrees with the Bode plot as the change in position is larger than the high frequency response. As previously mentioned, there is no torque resistance, so the system will tend to negative infinity. \\
+Fig. 8 displays an identical trajectory as the impulse response. This response agrees with the Bode plot as the change in position is larger than the high frequency response. As previously mentioned, there is no torque resistance, so the system will tend in the direction of negative infinity. \\
 
 \newpage
-\subsection{Local Y Responses:}
-\subsubsection{Local Y Impulse Response} 
+\subsection{Local y Responses:}
+\subsubsection{Local y Impulse Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{YImpulseRes.png}}
-\caption{Impulse Y Positional Response}
+\caption{Impulse y Positional Response}
 \label{figure}
 \end{figure}
 
 Fig. 9 shows the impulse initially accelerating the aircraft before reaching a steady state position. As previously mentioned, an impulse input is expected to be a stable step response. In comparison to the local x response, the local y response is independent of $\theta$ (Equation 22). Therefore, air drag is the only component slowing down the input. \\
 
 
-\subsubsection{Local Y Step Response} 
+\subsubsection{Local y Step Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{YStepRes.png}}
-\caption{Step Y Positional Response}
+\caption{Step y Positional Response}
 \label{figure}
 \end{figure}
 
-In Fig. 10, the local y behavior is linear because the system reached a constant terminal velocity. Thus, the step input is constant and larger than air drag, so this system will tend to positive infinity. As previously mentioned, the local y transfer function shows the step input will behavior like a unstable ramp response. 
+In Fig. 10, the local y behavior is linear because the system reached a constant terminal velocity. Thus, the step input is constant and larger than the air drag, so this system will tend to the direction of positive infinity. As previously mentioned, the local y transfer function shows the step input will behave like a unstable ramp response. 
 
 \newpage
-\subsubsection{Local Y Bode Response} 
+\subsubsection{Local y Bode Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{YBode.png}}
-\caption{Y Bode Plot}
+\caption{Local y Bode Plot}
 \label{figure}
 \end{figure}
 
 Fig. 11 illustrates the output magnitude is amplified and has a constant slope at low frequencies. At high frequencies, the magnitude slope becomes more steep. This amplified signal gradually attenuate at higher frequencies. The output response leads the input because the phase plot is negative. The signal changes from -90$^{\circ}$ phase at low frequencies to a -180$^{\circ}$ phase at high frequencies.
 Note that the frequency range is from 0.0001 to 1 $rad/s$. This plot may not accurately represent the behavior at high frequency (1000 $rad/s$).
-\subsubsection{Local Y High Freq Response} 
+\subsubsection{Local y High Freq Response} 
 \begin{figure}[htbp]
 \centering
 \centerline{\includegraphics[scale=0.6]{YHighFreqRes.png}}
-\caption{High Frequency Sinusoidal Y  Positional Responsee}
+\caption{High Frequency Sinusoidal y Positional Responsee}
 \label{figure}
 \end{figure}
 
-The graph (Fig. 12) is similar to the impulse response. At high frequencies, the local y response is initially amplified and slowly attenuate periodically to a steady-state mean. The system reaches a steady-state mean because air drag is slowing down the aircraft. \\
+The graph (Fig. 12) is similar to the impulse response. At high frequencies, the local y response is initially amplified and slowly attenuates periodically to a steady-state mean. The system reaches a steady-state mean because air drag is slowing down the aircraft. \\
 
 \newpage
-\subsubsection{Local Y Low Freq Response} 
+\subsubsection{Local y Low Freq Response} 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=0.6]{YLowFreqRes.png}}
-\caption{Low Frequency Sinusoidal Y Positional Response}
+\caption{Low Frequency Sinusoidal y Positional Response}
 \label{figure}
 \end{figure}
 
-For low frequencies, the output signal will be amplified and gradually decrease its amplification over time (Fig. 13).  This response converges faster to a steady-state mean than the high frequencies because the slope changes at this simulated frequency in the Bode plot. \\
+For low frequencies, the output signal will be amplified and gradually decreases its amplification over time (Fig. 13). This response converges faster to a steady-state mean than the high frequencies because the slope changes at this simulated frequency in the Bode plot. \\
 
 
 \section{Limitations and Future Improvements}
