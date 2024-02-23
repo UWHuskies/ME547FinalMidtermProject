@@ -27,16 +27,16 @@ tfreita@uw.edu}
 \maketitle
 
 \begin{abstract}
-The following analysis models a 2D vectored thrust aircraft and simulates its positional response with different thruster inputs. This nonlinear model is derived from Newtons' laws of motion and linearized around its equilibrium points using Jacobian Linearization and small angle approximation. This simulation determined the aircraft positional responses through testing a step, an impulse, and a sine wave at different frequencies. The simulation showed the aircraft horizontal position is unstable for all inputs. The large change in the aircraft orientation violated the small angle approximation, and the model neglected air torque resistance. The vertical position was stable for an impulse input but not asymptotically stable for a step and sinusoidal inputs. The next steps for this analysis will be implementing a Linear-Quadratic Regulator (LQR) controller to maintain stability.
+The following analysis models a 2D vectored thrust aircraft and simulates its positional response with different thruster inputs. This nonlinear model is derived from Newtons' laws of motion and linearized around its equilibrium points using Jacobian Linearization and small angle approximation. This simulation determined the aircraft's positional responses by testing a step, an impulse, and a sine wave at different frequencies. The simulation showed the aircraft's horizontal position is unstable for all inputs. The large change in the aircraft orientation violated the small angle approximation, and the model neglected air torque resistance. The vertical position was stable for an impulse input but not asymptotically stable for a step and sinusoidal inputs. The next step for this analysis will be implementing a Linear-Quadratic Regulator (LQR) controller to maintain stability.
 \end{abstract}
 
 
 \section{Introduction}
-The study of motion controls can be explored in many mechanical system applications. Motion controls have been implemented on aircraft for many years to control structural components including ailerons, elevators, and rudders. In recent decades, the Harrier jump jet has introduced the possibility for vertical takeoff and landing [1]. Specifically, the direction of the thrusters  change from a horizontal to downward position [1]. To navigate these vertical maneuvers, a controller is implemented for positional stability [3],[1]. This paper will focus on creating a model and simulating the response of a hovering vectored thrust aircraft.  
+The study of motion controls can be explored in many mechanical system applications. Motion controls have been implemented on aircraft for many years to control structural components including ailerons, elevators, and rudders. In recent decades, the Harrier jump jet has introduced the possibility of vertical takeoff and landing [1]. Specifically, the direction of the thrusters changes from a horizontal to a downward position [1]. To navigate these vertical maneuvers, a controller is implemented for positional stability [3],[1]. This paper will focus on creating a model and simulating the response of a hovering vectored thrust aircraft.  
 
 \section{Problem Formation:}
 \subsection{Model/Plant}
-The model (plant) of this system is a vectored thrust aircraft, which is analyzed as a rigid body in 2D space. This model has 3 thrusters: 1 thruster passing through the aircraft centroid, and 2 angled thrusters  near the wingtips [1]. Note that these wingtip thrusters are used for aircraft stability [1]. These 3 thrusters are coupled together and move as an unit. Therefore, the changes of the wingtip thruster angles are the same. Fig. 1 displays the free body diagram  (FBD) of the plant.  This diagram is in the Cartesian Coordinates System. The system outputs are the aircraft position ($x$, $y$) and orientation ($\theta$). Note that the simulation outputs are only the horizontal ($x$) and vertical ($y$) positions. The reaction forces of the thrusters are translated to a common intersection point, and $r$ is the distance from this common intersection point of the thrusters to the aircraft centroid [1]. Additionally, these reaction forces are combined and broken-down to its horizontal ($F_1$) \& vertical ($F_2$) components which are the inputs for this plant. The other arrows in this FBD are the applied thruster forces. Note that this FBD neglects air drag forces.
+The model (plant) of this system is a vectored thrust aircraft, which is analyzed as a rigid body in 2D space. This model has 3 thrusters: 1 thruster passing through the aircraft centroid, and 2 angled thrusters near the wingtips [1]. Note that these wingtip thrusters are used for aircraft stability [1]. These 3 thrusters are coupled together and move as a unit. Therefore, the changes in the wingtip thruster angles are the same. Fig. 1 displays the free body diagram  (FBD) of the plant.  This diagram is in the Cartesian Coordinates System. The system outputs are the aircraft position ($x$, $y$) and orientation ($\theta$). Note that the simulation outputs are only the horizontal ($x$) and vertical ($y$) positions. The reaction forces of the thrusters are translated to a common intersection point, and $r$ is the distance from this common intersection point of the thrusters to the aircraft centroid [1]. Additionally, these reaction forces are combined and broken down into horizontal ($F_1$) \& vertical ($F_2$) components which are the inputs for this plant. The other arrows in this FBD are the applied thruster forces. Note that this FBD neglects air drag forces.
 
 \subsection{Free-Body Diagram}
 \begin{figure}[!htbp]
@@ -46,11 +46,11 @@ Note: This diagram is not to scale.
 \label{figure1}
 \end{figure}
 
-\subsection{Phyiscs:}
-The aircraft can be represented as an airfoil which experiences aerodynamic forces (lift \& drag) from the air pressure distribution and shear stresses. The lift force counteracts the weight of the aircraft, and the thrust reduces the drag. Based on Newton’s $3^{rd}$ law, the applied downward thruster forces will have equal and opposite reactions, which are the aircraft lift forces. Also, the differential pressures across the aircraft area will create lift. The weight of the system is the aircraft mass. Drag is created by air and the vertical thruster reactions in the drag direction. The air stream leaving the thrusters is a laminar flow because the vertical maneuvers are at low speeds. The translational air drag, which opposes the direction of motion, is equal to the velocity times the damping coefficient ($c$) 
- ($F_{drag} = cx^\prime$). Note that the $1^{st}$ derivative of the aircraft position is velocity. $c$ depends on the frictional forces from the shear stresses along the aircraft surface, and the air pressure distribution in the drag direction.\\
+\subsection{Physics:}
+The aircraft can be represented as an airfoil that experiences aerodynamic forces (lift \& drag) from the air pressure distribution and shear stresses. The lift force counteracts the weight of the aircraft, and the thrust reduces the drag. Based on Newton’s $3^{rd}$ law, the applied downward thruster forces will have equal and opposite reactions, which are the aircraft lift forces. Also, the differential pressures across the aircraft area will create lift. The weight of the system is the aircraft mass. Drag is created by air and the vertical thruster reactions in the drag direction. The air stream leaving the thrusters is a laminar flow because the vertical maneuvers are at low speeds. The translational air drag, which opposes the direction of motion, is equal to the velocity times the damping coefficient ($c$) 
+ ($F_{drag} = cx^\prime$). Note that the $1^{st}$ derivative of the aircraft position is velocity. $c$ depends on the frictional forces from the shear stresses along the aircraft surface and the air pressure distribution in the drag direction.\\
 
-Newton's $2^{nd}$ law of motion is valid for this dynamic model because the aircraft position and orientation change in time. This law states the summation of forces equal the mass times acceleration. Similarly, the summation of torques equal the moment of inertia times angular acceleration. Note that the $2^{nd}$ derivative of position is the aircraft acceleration. Based on the FBD in Fig. 1, the system forces are air drag, reaction forces by the thrusters, and weight. These forces are broken down into their respected x and y components (Equations 1 \& 2). Note that these model equations are applicable to a hovering aircraft with no external disturbances. For Equation 3, the only torque on the aircraft is from the thruster reaction ($F_1$). Note that there is no air torque resistance in Equation 3.
+Newton's $2^{nd}$ law of motion is valid for this dynamic model because the aircraft's position and orientation change in time. This law states the summation of forces equals the mass times acceleration. Similarly, the summation of torques equals the moment of inertia times angular acceleration. Note that the $2^{nd}$ derivative of position is the aircraft acceleration. Based on the FBD in Fig. 1, the system forces are air drag, reaction forces by the thrusters, and weight. These forces are broken down into their respective x and y components (Equations 1 \& 2). Note that these model equations apply to a hovering aircraft with no external disturbances. For Equation 3, the only torque on the aircraft is from the thruster reaction ($F_1$). Note that there is no air torque resistance in Equation 3.
 
 \subsection{Nonlinear Differential Equations [1]:} 
 \[
@@ -72,7 +72,7 @@ Note: $u_1$ and $u_2$ represent $F_1$ and $F_2$ respectively in this block diagr
 \end{figure}
 
 \subsection{Nonlinear Differential Equation Observations:}
-This model has three coupled $2^{nd}$ order, ordinary differential equations. Note that these nonlinear equations have trigonometric functions. This system of equations is a continuous time model and a time varying system because the response and the differential equation coefficients depend on time. The model is causal because the equations depend on the current states. As previously mentioned, this is a dynamic system as the aircraft position and orientation change with respect to time. Table I lists the mathematical variables used in this analysis.\\
+This model has three coupled $2^{nd}$ order, ordinary differential equations. Note that these nonlinear equations have trigonometric functions. This system of equations is a continuous time model and a time-varying system because the response and the differential equation coefficients depend on time. The model is causal because the equations depend on the current states. As previously mentioned, this is a dynamic system as the aircraft's position and orientation change with respect to time. Table I lists the mathematical variables used in this analysis.\\
 
 \begin{table}[htbp]
 \begin{center}
@@ -147,9 +147,9 @@ $G_2$ & Local y transfer function & $-$\\
 
 \newpage
 \section{Analysis}
-This model is a system of nonlinear differential equations. Therefore, the system will be linearized around its equilibrium points with the Jacobian Linearization method [2]. These $2^{nd}$ differential equations are converted to a nonlinear state-space system, which is a system of $1^{st}$  order differential equations. $z$ is the nonlinear state-space variable for the state equation: ($z$ = ($z_1 = x$, $z_2 = y$, $z_3 = \theta$, $z_4 = x^\prime$, $z_5 = y^\prime$, $z_6 = \theta^\prime$)), and $F$ is the nonlinear input variable: ($F$ = ($F_1,F_2$)).\\
+This model is a system of nonlinear differential equations. Therefore, the system will be linearized around its equilibrium points with the Jacobian Linearization method [2]. These $2^{nd}$ differential equations are converted to a nonlinear state-space system, which is a system of $1^{st}$  order differential equations. $z$ is the nonlinear state-space variable for the state equation: ($z$ = ($z_1 = x$, $z_2 = y$, $z_3 = \theta$, $z_4 = x^\prime$, $z_5 = y^\prime$, $z_6 = \theta^\prime$)), and $F$ is the nonlinear input variable: ($F$ = ($F_1, F_2$)).\\
 
-Note: assume small angle approximation around the equilibrium points: $sin(\theta) \approx \theta$ \& $cos(\theta) \approx 1$. The range of $\theta$ is from 0 to $2\pi$. Equations 4 and 5 show the nonlinear state-space and output equations respectively [1]. $f$ is the time derivative of $z$, and $h$ is the nonlinear state-space output.
+Note: assume a small angle approximation around the equilibrium points: $sin(\theta) \approx \theta$ \& $cos(\theta) \approx 1$. The range of $\theta$ is from 0 to $2\pi$. Equations 4 and 5 show the nonlinear state-space and output equations respectively [1]. $f$ is the time derivative of $z$, and $h$ is the nonlinear state-space output.
 
 \[
 f(z,F) = \frac{dz}{dt} =
@@ -179,9 +179,9 @@ The equilibrium points are determined by setting these nonlinear system of equat
 \noindent Stable Equilibrium Points: \\
 \indent $z_e$ = ($z_1 = x_e$, $z_2 = y_e$, $z_3 = 0$, $z_4 = 0$, $z_5 = 0$, $z_6 = 0$)\\
 \indent $F_e$ = ($F_1 = 0$, $F_2 = mg$)\\
-Note: the system of equations above are independent of $x$ and $y$. \\
+Note: the system of equations above is independent of $x$ and $y$. \\
 
-At a given equilibrium point ($x_e$ \& $y_e$), there is no rotational or translational velocity, and the horizontal reaction force ($F_1$) and $\theta$ are zero. The vertical reaction force ($F_2$) supports its own weight. 
+At a given equilibrium point ($x_e$ \& $y_e$), there is no rotational or translational velocity, and the horizontal reaction force ($F_1$) and $\theta$ are zero. The vertical reaction force ($F_2$) supports its weight. 
 
 \subsection{Jacobian Matrices:}
 Equations 6 and 7 compute the Jacobian Matrices for this nonlinear system [1].
@@ -197,7 +197,7 @@ D = \frac{\partial h}{\partial F}\bigg|_{(z_e,F_e)}
 \]
 
 \newpage
-The following 8-11 equations breakdown the Jacobian Matrices into the partial derivatives of $f$ and $h$ in respect to the nonlinear state-space variable ($z$) and nonlinear state-space input ($F$).
+The following 8-11 equations break down the Jacobian Matrices into the partial derivatives of $f$ and $h$ with respect to the nonlinear state-space variable ($z$) and nonlinear state-space input ($F$).
 
 \[
 A = 
@@ -248,7 +248,7 @@ D =
 
 \newpage
 \subsection{Linearized State-Space Equations \& Block Diagram:}
-These Jacobian Matrices (Equations 14-17) create a linearized state-space system, which analyze the local behavior around the equilibrium points [1]. New variables are created by subtracting the nonlinear state-space variable and input with its equilibrium points. Thus, $\zeta = z - z_e$\, which is the linearized state-space variable, $v = F - F_e$, which is the linearized state-space input variable, and P is the linearized state-space output variable. Equations 12 and 13 show the linearized state-space and output equations respectively [1].
+These Jacobian Matrices (Equations 14-17) create a linearized state-space system, which analyzes the local behavior around the equilibrium points [1]. New variables are created by subtracting the nonlinear state-space variable and input with its equilibrium points. Thus, $\zeta = z - z_e$\, which is the linearized state-space variable, $v = F - F_e$, which is the linearized state-space input variable, and P is the linearized state-space output variable. Equations 12 and 13 show the linearized state-space and output equations respectively [1].
 
 \[
 \zeta^\prime = A\zeta + Bv
@@ -342,7 +342,7 @@ Note: $u_1$ and $u_2$ represent $F_1$ and $F_2$ respectively in this block diagr
 \end{figure}
 
 \section{Simulation}
-The simulation outputs are the local behaviors of the horizontal ($x - x_e$) and vertical ($y - y_e$) aircraft positional responses around its equilibrium points. As previously mentioned, this simulation will start at its equilibrium point ($x_e$, $y_e$), and the aircraft is already supporting its own weight at this location. The origin of this equilibrium point is ($x_e = 0$, $y_e = 0$). The test inputs of the simulation are a sine wave at high \& low frequencies, impulse, and step. Note that the simulation frequencies ($\omega_{low} = 0.01$ $rad/s$, $\omega_{high} = 1000$ $rad/s$) were chosen to capture the system dynamic at high and low frequencies. The following model parameters (Table II) are additionally used in this simulation:\\
+The simulation outputs are the local behaviors of the horizontal ($x - x_e$) and vertical ($y - y_e$) aircraft positional responses around their equilibrium points. As previously mentioned, this simulation will start at its equilibrium point ($x_e$, $y_e$), and the aircraft is already supporting its weight at this location. The origin of this equilibrium point is ($x_e = 0$, $y_e = 0$). The test inputs of the simulation are a sine wave at high \& low frequencies, impulse, and step. Note that the simulation frequencies ($\omega_{low} = 0.01$ $rad/s$, $\omega_{high} = 1000$ $rad/s$) were chosen to capture the system dynamic at high and low frequencies. The following model parameters (Table II) are additionally used in this simulation:\\
 \begin{table}[h]
 \begin{center}
 \caption{Simulation Parameters [1]}
@@ -391,7 +391,7 @@ G_2(s) = \frac{0.25 s^4 + 0.003125 s^3}{s^6 + 0.025 s^5 + 0.0001563 s^4} \tag{28
 $y$ Poles: 0, 0, 0, 0, -0.0125, and -0.0125\\
 $y$ Zeros: 0, 0, 0 , -0.0125\\
 
-For both transfer functions, multiple poles at the origin makes this system not asymptotically stable without accounting for pole-zero cancellation. For a step \& impulse input, the local x transfer function has one pole-zero cancellation at the origin, but the multiplicity of the eigenvalues at the origin will cause this system to be unstable. The local y transfer function has 3 pole-zero cancellations at the origin, therefore the system responses will behave like a $2^{nd}$ order system. For this local y response, the impulse input will be a stable step response, and the step input will behave like an unstable ramp response. 
+For both transfer functions, multiple poles at the origin make this system not asymptotically stable without accounting for pole-zero cancellation. For a step \& impulse input, the local x transfer function has one pole-zero cancellation at the origin, but the multiplicity of the eigenvalues at the origin will cause this system to be unstable. The local y transfer function has 3 pole-zero cancellations at the origin, therefore the system responses will behave like a $2^{nd}$ order system. For this local y response, the impulse input will be a stable step response, and the step input will behave like an unstable ramp response. 
 
 \newpage
 \section{Results}
@@ -470,7 +470,7 @@ Fig. 9 shows the impulse initially accelerating the aircraft before reaching a s
 \label{figure}
 \end{figure}
 
-In Fig. 10, the local y behavior is linear because the system reached a constant terminal velocity. Thus, the step input is constant and larger than the air drag, so this system will tend to the direction of positive infinity. As previously mentioned, the local y transfer function shows the step input will behave like a unstable ramp response. 
+In Fig. 10, the local y behavior is linear because the system reached a constant terminal velocity. Thus, the step input is constant and larger than the air drag, so this system will tend to the direction of positive infinity. As previously mentioned, the local y transfer function shows the step input will behave like an unstable ramp response. 
 
 \newpage
 \subsubsection{Local y Bode Response} 
@@ -480,7 +480,7 @@ In Fig. 10, the local y behavior is linear because the system reached a constant
 \label{figure}
 \end{figure}
 
-Fig. 11 illustrates the output magnitude is amplified and has a constant slope at low frequencies. At high frequencies, the magnitude slope becomes more steep. This amplified signal gradually attenuate at higher frequencies. The output response leads the input because the phase plot is negative. The signal changes from -90$^{\circ}$ phase at low frequencies to a -180$^{\circ}$ phase at high frequencies.
+Fig. 11 illustrates the output magnitude is amplified and has a constant slope at low frequencies. At high frequencies, the magnitude slope becomes more steep. This amplified signal gradually attenuates at higher frequencies. The output response leads the input because the phase plot is negative. The signal changes from a -90$^{\circ}$ phase at low frequencies to a -180$^{\circ}$ phase at high frequencies.
 Note that the frequency range is from 0.0001 to 1 $rad/s$. This plot may not accurately represent the behavior at high frequency (1000 $rad/s$).
 \subsubsection{Local y High Freq Response} 
 \begin{figure}[htbp]
@@ -500,19 +500,19 @@ The graph (Fig. 12) is similar to the impulse response. At high frequencies, the
 \label{figure}
 \end{figure}
 
-For low frequencies, the output signal will be amplified and gradually decreases its amplification over time (Fig. 13). This response converges faster to a steady-state mean than the high frequencies because the slope changes at this simulated frequency in the Bode plot. \\
+For low frequencies, the output signal will be amplified and gradually decrease its amplification over time (Fig. 13). This response converges faster to a steady-state mean than the high frequencies because the slope changes at this simulated frequency in the Bode plot. \\
 
 
 \section{Limitations and Future Improvements}
-The limitations of the model are neglecting air torque resistance and violating the small angle approximation. Note that linearizing the system around its equilibrium points may not capture majority of the nonlinear system dynamics. For future application, a LQR controller can be implemented to control external disturbances and stability. The model can include vertical takeoff and landing maneuvers.
+The limitations of the model are neglecting air torque resistance and violating the small angle approximation. Note that linearizing the system around its equilibrium points may not capture the majority of the nonlinear system dynamics. For future applications, a LQR controller can be implemented to control external disturbances and stability. The model can include vertical takeoff and landing maneuvers.
 
 \newpage
 \section{Group Contribution Breakdown}
 Reese: FBD, Nonlinear and Linear Simulink Models, Block Diagram photos, and interpretation/analysis of the Linear/Nonlinear results to the physical system.\\
 
-Sayed: Nonlinear Simulink model, Linearizing Nonlinear System, Analysis, and Mathematical reviewer.  \\
+Sayed: Nonlinear Simulink model, Linearizing Nonlinear System, Analysis, and Mathematical Reviewer.  \\
 
-Tyler: Linearizing Nonlinear System, References, Analysis, MATLAB Simulation, and create Overleaf template with Model equations, Analysis, Simulation, and MATLAB Results. \\
+Tyler: Linearizing Nonlinear System, References, Analysis, MATLAB Simulation, and create an Overleaf template with Model equations, Analysis, Simulation, and MATLAB Results. \\
 
 \section{References}
 \noindent [1] K. J. Åström, R. M. Murray, \textit{Feedback Systems: An Introduction for Scientists and Engineers.} Princeton University Press, 2008. [Online]. Available: http://www.cds.caltech.edu/$\sim$murray/books/AM08/pdf/fbs-public\_24Jul2020.pdf. 
